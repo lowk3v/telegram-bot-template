@@ -17,7 +17,7 @@ import (
 )
 
 type secretConfig struct {
-	EnvMode string `json:"APP_ENV"`
+	EnvMode string `json:"PROJECT_NAME_ENV"`
 }
 
 type appConfig struct {
@@ -65,7 +65,7 @@ func init() {
 }
 
 func loadSystemEnv(s *secretConfig) {
-	if len(os.Getenv("APP_ENV")) != 0 {
+	if len(os.Getenv("PROJECT_NAME_ENV")) != 0 {
 		s.EnvMode = os.Getenv("SCON_ENV")
 	}
 	// insert more if handle more environment variables
@@ -109,6 +109,6 @@ func InitHttpClient(proxy string) {
 }
 
 func (s *secretConfig) PrintInfo() {
-	fmt.Printf("CURRENT ENVIRONMENT: [%s]. To switch environment, set APP_ENV=...\n\n",
+	fmt.Printf("CURRENT ENVIRONMENT: [%s]. To switch environment, set PROJECT_NAME_ENV=...\n\n",
 		color.BlueString(Secret.EnvMode))
 }

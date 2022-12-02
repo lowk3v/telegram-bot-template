@@ -8,14 +8,15 @@ import (
 
 	"github.com/fatih/color"
 
+	"github.com/author_name/project_name/pkg/project_name"
+
 	"github.com/author_name/project_name/configs"
-	"github.com/author_name/project_name/pkg/app"
 )
 
-var args app.Arguments
+var args project_name.Arguments
 
 func banner() string {
-	// https://patorjk.com/software/taag/#p=display&f=ANSI%20Shadow&t=app
+	// https://patorjk.com/software/taag/#p=display&f=ANSI%20Shadow&t=project_name
 	return fmt.Sprintln(
 		color.YellowString("==================================================\n"),
 		color.HiBlueString(`
@@ -26,14 +27,14 @@ func banner() string {
     ██║  ██║██║     ██║     
     ╚═╝  ╚═╝╚═╝     ╚═╝ `+" By @author_name\n"),
 		color.BlueString("project_description\n"),
-		"Credits: https://github.com/author_name/app\n",
+		"Credits: https://github.com/author_name/project_name\n",
 		"Twitter: https://twitter.com/#\n",
 		color.YellowString("=================================================="),
 	)
 }
 
 func init() {
-	args = app.Arguments{}
+	args = project_name.Arguments{}
 
 	// delay time between requests
 	flag.IntVar(&args.DelayOpt, "delay", 200, "DelayOpt between requests (ms)")
@@ -50,7 +51,7 @@ func init() {
 	flag.Usage = func() {
 		h := []string{
 			banner(),
-			"Usage of: APP_ENV=develop && app <options> <args>",
+			"Usage of: PROJECT_NAME_ENV=develop && project_name <options> <args>",
 			"Options",
 			"  -d, --delay <delay>       	DelayOpt between issuing requests (ms)",
 			"  -o, --output <dir>        	Directory to save responses in (will be created)",
@@ -67,5 +68,5 @@ func init() {
 func main() {
 	fmt.Println(banner())
 	configs.Secret.PrintInfo()
-	app.Run(&args)
+	project_name.Run(&args)
 }

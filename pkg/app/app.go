@@ -1,4 +1,4 @@
-package app
+package project_name
 
 import (
 	"github.com/author_name/project_name/configs"

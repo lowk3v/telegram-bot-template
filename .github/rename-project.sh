@@ -20,19 +20,20 @@ original_author="author_name"
 original_name="project_name"
 original_urlname="project_urlname"
 original_description="project_description"
+original_name_upper="$(echo $original_name|tr 'a-z' 'A-Z')"
+name_upper="$(echo $name|tr 'a-z' 'A-Z')"
+
 # for filename in $(find . -name "*.*")
 for filename in $(git ls-files)
 do
     sed -i "s/$original_author/$author/g" $filename
-    sed -i "s/$original_name/$name/g" $filename
+    sed "s/$original_name/$name/g" $filename
     sed -i "s/$original_urlname/$urlname/g" $filename
     sed -i "s/$original_description/$description/g" $filename
+    sed "s/$original_name/$name/g" $filename
+    sed "s/$original_name_upper/$name_upper/g" $filename
     echo "Renamed $filename"
 done
-
-original_name_env="PROJECT_NAME"
-name_env="$(echo $name|tr 'a-z' 'A-Z')"
-sed "s/$original_name_ENV/$name_env/g" .env
 
 mv cmd/app cmd/$name
 mv pkg/app/app.go pkg/app/$name.go
