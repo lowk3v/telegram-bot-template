@@ -24,7 +24,7 @@ do
     fi
     sed -i -- "s/author_name/$author/g" $filename
     sed -i -- "s/project_description/$description/g" $filename
-    sed -- "s/PROJECT_NAME/$name_upper/g" $filename
+    sed -i -- "s/PROJECT_NAME/$name_upper/g" $filename
     sed -i -- "s/project_name/$name/g" $filename
     echo "Renamed $filename"
 done
