@@ -16,22 +16,16 @@ echo "Description: $description";
 
 echo "Renaming project..."
 
-original_author="author_name"
-original_name="project_name"
-original_urlname="project_urlname"
-original_description="project_description"
-original_name_upper="$(echo $original_name|tr 'a-z' 'A-Z')"
 name_upper="$(echo $name|tr 'a-z' 'A-Z')"
 
 # for filename in $(find . -name "*.*")
 for filename in $(git ls-files)
 do
-    sed -i "s/$original_author/$author/g" $filename
-    sed "s/$original_name/$name/g" $filename
-    sed -i "s/$original_urlname/$urlname/g" $filename
-    sed -i "s/$original_description/$description/g" $filename
-    sed "s/$original_name/$name/g" $filename
-    sed "s/$original_name_upper/$name_upper/g" $filename
+    sed -i "s/author_name/$author/g" $filename
+    sed -i "s/project_urlname/$urlname/g" $filename
+    sed -i "s/project_description/$description/g" $filename
+    sed "s/PROJECT_NAME/$name_upper/g" $filename
+    sed -i "s/project_name/$name/g" $filename
     echo "Renamed $filename"
 done
 
