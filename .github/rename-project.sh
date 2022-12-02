@@ -32,6 +32,7 @@ done
 mv cmd/app cmd/$name
 mv pkg/app/app.go pkg/app/$name.go
 mv pkg/app pkg/$name
+mv configs/.env-example configs/.env
 
 # This command runs only once on GHA!
 rm -rf .github/template.yml

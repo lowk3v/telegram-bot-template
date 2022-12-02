@@ -30,6 +30,8 @@ The simple golang template for SaaS, tools, and services.
 3. Wait until the first run of CI finishes
    (Github Actions will process the template and commit to your new repo)
    Then clone your new project and happy coding!
+4. Rename `.env-example` to `.env` and fill in the values
+5. Replace banner at `cmd/project_name/main.go` by use this tool: https://patorjk.com/software/taag/#p=display&f=ANSI%20Shadow&t=%20project_name
 
 > NOTE: WAIT until first CI run on Github actions before cloning your new project.
 

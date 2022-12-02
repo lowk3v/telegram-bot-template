@@ -16,7 +16,7 @@ import (
 var args project_name.Arguments
 
 func banner() string {
-	// https://patorjk.com/software/taag/#p=display&f=ANSI%20Shadow&t=project_name
+	// https://patorjk.com/software/taag/#p=display&f=ANSI%20Shadow&t=%20project_name
 	return fmt.Sprintln(
 		color.YellowString("==================================================\n"),
 		color.HiBlueString(`

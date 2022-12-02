@@ -13,7 +13,6 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/joho/godotenv"
-	"gopkg.in/yaml.v3"
 )
 
 type secretConfig struct {
@@ -37,7 +36,7 @@ var Symbol SymbolConfig
 //go:embed config.yaml
 var appConfigYaml string
 
-//go:embed *.env
+//go:embed .env
 var envFile string
 
 func init() {
