@@ -10,12 +10,8 @@ import (
 	"github.com/fatih/color"
 	"github.com/joho/godotenv"
 	"gopkg.in/yaml.v3"
-	"net"
-	"net/http"
-	"net/url"
 	"os"
 	"sync"
-	"time"
 )
 
 type secretConfig struct {
