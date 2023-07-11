@@ -1,37 +1,41 @@
 package configs
 
 import (
-	"crypto/tls"
 	_ "embed"
 	"encoding/json"
 	"fmt"
+	"github.com/author_name/project_name/internal/constant/const_app"
+	"github.com/author_name/project_name/pkg/log"
+	"github.com/author_name/project_name/pkg/pubsub/publisher"
+	"github.com/fatih/color"
+	"github.com/joho/godotenv"
+	"gopkg.in/yaml.v3"
 	"net"
 	"net/http"
 	"net/url"
 	"os"
+	"sync"
 	"time"
-
-	"github.com/fatih/color"
-	"github.com/joho/godotenv"
 )
 
 type secretConfig struct {
-	EnvMode string `json:"PROJECT_NAME_ENV"`
+	Env   string `json:"PROJECT_NAME_ENV"`
+	Token string `json:"PROJECT_NAME_TOKEN"`
 }
 
 type appConfig struct {
 }
 
-type SymbolConfig struct {
-	Success string
-	Error   string
-	Info    string
+type UserInteractionConfig struct {
+	Sync             *sync.Mutex
+	Timeout          int
+	WaitReply        bool
+	WaitReplyCommand string
+	MetaData         map[string]interface{}
 }
 
 var Secret secretConfig
 var AppConfig appConfig
-var HttpClient *http.Client
-var Symbol SymbolConfig
 
 //go:embed config.yaml
 var appConfigYaml string
@@ -39,33 +43,52 @@ var appConfigYaml string
 //go:embed .env
 var envFile string
 
+var GlobalPublisher *publisher.Publisher
+var UserInteraction *UserInteractionConfig
+var Log *log.Logger
+
 func init() {
+	Log = log.New("info")
+
 	// load environment from file. Be overridden by system environment
 	envContent, err := godotenv.Unmarshal(envFile)
 	err = convertToStruct(envContent, &Secret)
 	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "%s Error: %v\n", color.RedString("¿"), err)
+		Log.WithField("env", Secret.Env).Error("Error loading environment")
 	}
-	loadSystemEnv(&Secret)
+	loadSystemEnv(&AppConfig, &Secret)
 
 	// load config based on environment (production, development, testnet)
 	var appConfigTemp map[string]interface{}
 	err = yaml.Unmarshal([]byte(appConfigYaml), &appConfigTemp)
-	err = convertToStruct(appConfigTemp[Secret.EnvMode], &AppConfig)
+	err = convertToStruct(appConfigTemp[Secret.Env], &AppConfig)
+
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "%s Error: %v\n", color.RedString("¿"), err)
+		Log.WithField("app config", Secret.Env).Error("Error loading app config")
 	}
 
-	Symbol = SymbolConfig{
-		Success: color.GreenString("≠"),
-		Error:   color.RedString("¿"),
-		Info:    color.BlueString("ℹ"),
+	if Secret.Env == const_app.DEVELOP {
+		Log = log.New("debug")
+	}
+
+	// Queue
+	GlobalPublisher = publisher.New()
+	GlobalPublisher.Run()
+
+	// User interaction
+	UserInteraction = &UserInteractionConfig{
+		Sync:             &sync.Mutex{},
+		Timeout:          30,
+		WaitReply:        false,
+		WaitReplyCommand: "",
+		MetaData:         make(map[string]interface{}),
 	}
 }
 
-func loadSystemEnv(s *secretConfig) {
+func loadSystemEnv(a *appConfig, s *secretConfig) {
 	if len(os.Getenv("PROJECT_NAME_ENV")) != 0 {
-		s.EnvMode = os.Getenv("SCON_ENV")
+		s.EnvMode = os.Getenv("PROJECT_NAME_ENV")
 	}
 	// insert more if handle more environment variables
 }
@@ -79,35 +102,7 @@ func convertToStruct(from interface{}, to interface{}) error {
 	return nil
 }
 
-func InitHttpClient(proxy string) {
-	transport := &http.Transport{
-		MaxIdleConns:    30,
-		IdleConnTimeout: time.Second,
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		DialContext: (&net.Dialer{
-			Timeout:   time.Second * 10,
-			KeepAlive: time.Second,
-		}).DialContext,
-	}
-
-	if proxy != "" {
-		if p, err := url.Parse(proxy); err == nil {
-			transport.Proxy = http.ProxyURL(p)
-		}
-	}
-
-	redirect := func(req *http.Request, via []*http.Request) error {
-		return http.ErrUseLastResponse
-	}
-
-	HttpClient = &http.Client{
-		Transport:     transport,
-		CheckRedirect: redirect,
-		Timeout:       time.Second * 10,
-	}
-}
-
 func (s *secretConfig) PrintInfo() {
-	fmt.Printf("CURRENT ENVIRONMENT: [%s]. To switch environment, set PROJECT_NAME_ENV=...\n\n",
-		color.BlueString(Secret.EnvMode))
+	Log.WithField("environment", color.BlueString(Secret.Env)).
+		Info("App Config")
 }
