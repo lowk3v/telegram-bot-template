@@ -6,6 +6,8 @@ import (
 	"sync"
 )
 
+const HelpCommand = "help"
+
 type Handler struct {
 	sync sync.Mutex
 	wg   *sync.WaitGroup
@@ -25,14 +27,15 @@ func New(bot *tgbotapi.BotAPI, k *keyboard.Handler) *Handler {
 
 func (h *Handler) SetNewCommand() (*tgbotapi.APIResponse, error) {
 	resp, err := h.bot.Request(tgbotapi.NewSetMyCommands(
-		tgbotapi.BotCommand{Command: HELP, Description: "Help info"},
+		tgbotapi.BotCommand{Command: HelpCommand, Description: "Help info"},
 	))
+
 	return resp, err
 }
 
 func (h *Handler) Handle(cmd, arg string) (string, interface{}, error) {
 	switch cmd {
-	case HELP:
+	case HelpCommand:
 		return h.helpInfo(), nil, nil
 	}
 	return "", nil, nil
@@ -49,5 +52,13 @@ func (h *Handler) HandleReplyCommand(incomeStream *tgbotapi.Update) (string, err
 }
 
 func (h *Handler) helpInfo() string {
-	return "Help info"
+	commands, err := h.bot.GetMyCommands()
+	if err != nil {
+		return err.Error()
+	}
+	reply := "Fison bot commands:\n\n"
+	for _, cmd := range commands {
+		reply += "**/" + cmd.Command + "** \\- " + tgbotapi.EscapeText(tgbotapi.ModeMarkdownV2, cmd.Description) + "\n"
+	}
+	return reply
 }

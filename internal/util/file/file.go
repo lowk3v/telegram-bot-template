@@ -4,8 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
-
-	"github.com/author_name/project_name/configs"
+	"github.com/author_name/project_name/constant"
 )
 
 func createFile(filepath string) error {
@@ -47,7 +46,7 @@ func Mkdir(dir string) error {
 			return err2
 		}
 	} else if !stat.IsDir() {
-		return errors.New(fmt.Sprintf("%s %s is not a directory", configs.Symbol.Error, dir))
+		return errors.New(fmt.Sprintf("%s %s is not a directory", constant.SYMBOL_ERROR, dir))
 	}
 	return nil
 }

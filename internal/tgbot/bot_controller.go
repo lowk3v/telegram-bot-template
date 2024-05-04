@@ -22,9 +22,9 @@ type TgBot struct {
 }
 
 func New() *TgBot {
-	bot, err := tgbotapi.NewBotAPI(config.Secret.Token)
+	bot, err := tgbotapi.NewBotAPI(config.AppConfig.Token)
 	if err != nil {
-		if config.Secret.Token == "" {
+		if config.AppConfig.Token == "" {
 			config.Log.Errorf("Token is empty")
 		} else {
 			config.Log.Errorf("Error: %v", err)
@@ -107,7 +107,6 @@ func (tg *TgBot) RunBotController() {
 
 		reloadKeyboard(tg.keyboardHandle, &outStream, replyMsg, replyMarkup)
 		sendToTelegram(tg.bot, outStream)
-
 	}
 }
 
@@ -134,8 +133,8 @@ func reloadKeyboard(keyboardHandle *keyboard.Handler, outStream *tgbotapi.Messag
 		keyboardHandle.Close(outStream)
 	} else {
 		outStream.ReplyMarkup = replyMarkup
-		outStream.Text = replyMsg
 	}
+	outStream.Text = replyMsg
 }
 
 func sendToTelegram(bot *tgbotapi.BotAPI, msgConfig tgbotapi.MessageConfig) {

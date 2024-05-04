@@ -1,0 +1,7 @@
+env: develop
+develop:
+  token: 
+  whitelist: 
+production:
+  token: 123123
+  whitelist: 123,123

@@ -16,11 +16,11 @@ func banner() string {
 	return fmt.Sprintln(
 		color.YellowString("==================================================\n"),
 		color.HiBlueString(`
-     █████╗ ██████╗ ██████╗ 
+     █████╗ ██████╗ ██████╗
     ██╔══██╗██╔══██╗██╔══██╗
     ███████║██████╔╝██████╔╝
-    ██╔══██║██╔═══╝ ██╔═══╝ 
-    ██║  ██║██║     ██║     
+    ██╔══██║██╔═══╝ ██╔═══╝
+    ██║  ██║██║     ██║
     ╚═╝  ╚═╝╚═╝     ╚═╝ `+" By @author_name\n"),
 		color.BlueString("project_description\n"),
 		"Credits: https://github.com/author_name/project_name\n",
@@ -45,7 +45,7 @@ func init() {
 	flag.Usage = func() {
 		h := []string{
 			banner(),
-			"Usage of: PROJECT_NAME_ENV=develop && project_name <options> <args>",
+			"Usage of: project_name <options> <args>",
 			"Options",
 			"Args",
 		}
@@ -57,9 +57,10 @@ func init() {
 
 func main() {
 	fmt.Println(banner())
-	configs.Secret.PrintInfo()
+	configs.AppConfig.PrintInfo()
 
-	// Notify service
 	bot := tgbot.New()
-	go bot.RunBotController()
+	// Notify service
+	//go bot.SubscribeNotification()
+	bot.RunBotController()
 }
