@@ -28,10 +28,10 @@ do
       sed -i '' -e "s/PROJECT_NAME/$name_upper/g" $filename
       sed -i '' -e "s/project_name/$name/g" $filename
     else
-      sed -i '' "s/author_name/$author/g" $filename
-      sed -i '' "s/project_description/$description/g" $filename
-      sed -i '' "s/PROJECT_NAME/$name_upper/g" $filename
-      sed -i '' "s/project_name/$name/g" $filename
+      sed -e "s/author_name/$author/g" $filename
+      sed -e "s/project_description/$description/g" $filename
+      sed -e "s/PROJECT_NAME/$name_upper/g" $filename
+      sed -e "s/project_name/$name/g" $filename
     fi
     echo "Renamed $filename"
 done
