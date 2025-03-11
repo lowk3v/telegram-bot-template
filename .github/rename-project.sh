@@ -27,10 +27,10 @@ do
       sed -i '' -e "s/PROJECT_NAME/$name_upper/g" $filename >> /dev/null
       sed -i '' -e "s/project_name/$name/g" $filename >> /dev/null
     else
-      sed -ie "s/author_name/$author/g" $filename >> /dev/null
-      sed -ie "s/project_description/$description/g" $filename >> /dev/null
-      sed -ie "s/PROJECT_NAME/$name_upper/g" $filename >> /dev/null
-      sed -ie "s/project_name/$name/g" $filename >> /dev/null
+      sed -i '' -e "s/author_name/$author/g" $filename >> /dev/null
+      sed -i '' -e "s/project_description/$description/g" $filename >> /dev/null
+      sed -i '' -e "s/PROJECT_NAME/$name_upper/g" $filename >> /dev/null
+      sed -i '' -e "s/project_name/$name/g" $filename >> /dev/null
     fi
 
     # checking
