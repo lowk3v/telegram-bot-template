@@ -2,11 +2,18 @@ package command
 
 import (
 	"github.com/author_name/project_name/internal/tgbot/handler/keyboard"
+	"github.com/author_name/project_name/internal/util"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"reflect"
+	"strings"
 	"sync"
 )
 
 const HelpCommand = "help"
+const StartCommand = "start"
+const StopCommand = "stop"
+const StatusCommand = "status"
+const RestartCommand = "restart"
 
 type Handler struct {
 	sync sync.Mutex
@@ -28,17 +35,26 @@ func New(bot *tgbotapi.BotAPI, k *keyboard.Handler) *Handler {
 func (h *Handler) SetNewCommand() (*tgbotapi.APIResponse, error) {
 	resp, err := h.bot.Request(tgbotapi.NewSetMyCommands(
 		tgbotapi.BotCommand{Command: HelpCommand, Description: "Help info"},
+		tgbotapi.BotCommand{Command: StartCommand, Description: "Start the bot"},
+		tgbotapi.BotCommand{Command: StopCommand, Description: "Stop the bot"},
+		tgbotapi.BotCommand{Command: StatusCommand, Description: "Status of the bot"},
+		tgbotapi.BotCommand{Command: RestartCommand, Description: "Restart the bot"},
 	))
 
 	return resp, err
 }
 
-func (h *Handler) Handle(cmd, arg string) (string, interface{}, error) {
-	switch cmd {
-	case HelpCommand:
-		return h.helpInfo(), nil, nil
+func (h *Handler) Handle(cmd, arg string) util.HandlerReturnType {
+	handleName := "Command"
+
+	parts := strings.Split(cmd, "_")
+	for _, part := range parts {
+		handleName += strings.ToTitle(part[:1]) + part[1:]
 	}
-	return "", nil, nil
+
+	cmd = strings.Replace(cmd, "_", "", -1)
+	result := reflect.ValueOf(h).MethodByName(handleName).Call([]reflect.Value{reflect.ValueOf(arg)})
+	return result[0].Interface().(util.HandlerReturnType)
 }
 
 func (h *Handler) HandleReplyCommand(incomeStream *tgbotapi.Update) (string, error) {
@@ -49,16 +65,4 @@ func (h *Handler) HandleReplyCommand(incomeStream *tgbotapi.Update) (string, err
 	//reply := strings.Split(incomeStream.CallbackData(), "__")[2]
 
 	return "", nil
-}
-
-func (h *Handler) helpInfo() string {
-	commands, err := h.bot.GetMyCommands()
-	if err != nil {
-		return err.Error()
-	}
-	reply := "Fison bot commands:\n\n"
-	for _, cmd := range commands {
-		reply += "**/" + cmd.Command + "** \\- " + tgbotapi.EscapeText(tgbotapi.ModeMarkdownV2, cmd.Description) + "\n"
-	}
-	return reply
 }

@@ -2,6 +2,7 @@ package message
 
 import (
 	"github.com/author_name/project_name/internal/tgbot/handler/keyboard"
+	"github.com/author_name/project_name/internal/util"
 	"sync"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -24,10 +25,9 @@ func New(bot *tgbotapi.BotAPI, k *keyboard.Handler) *Handler {
 	}
 }
 
-func (h *Handler) Handle(incomeStream *tgbotapi.Update) (string, error) {
+func (h *Handler) Handle(incomeStream *tgbotapi.Update) util.HandlerReturnType {
 	message := incomeStream.Message.Text
-	if message == "" {
-		return "", nil
+	return util.HandlerReturnType{
+		ReplyMsg: message + " does not supported",
 	}
-	return message, nil
 }

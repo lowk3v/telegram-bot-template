@@ -6,6 +6,7 @@ import (
 	"github.com/author_name/project_name/internal/tgbot/handler/command"
 	"github.com/author_name/project_name/internal/tgbot/handler/keyboard"
 	"github.com/author_name/project_name/internal/tgbot/handler/message"
+	"github.com/author_name/project_name/internal/util"
 	"github.com/author_name/project_name/internal/util/incoming"
 	"github.com/author_name/project_name/pkg/pubsub/consumer"
 	"github.com/fatih/color"
@@ -59,9 +60,7 @@ func (tg *TgBot) RunBotController() {
 	u.Timeout = 60
 	for incomeStream := range tg.bot.GetUpdatesChan(u) {
 		// Initialize message output or callback query output
-		var err error
-		var replyMarkup interface{}
-		replyMsg := ""
+		handleRs := util.HandlerReturnType{}
 		var outStream tgbotapi.MessageConfig
 
 		if incoming.Classify(incomeStream) == "callback" {
@@ -84,28 +83,26 @@ func (tg *TgBot) RunBotController() {
 			tg.keyboardHandle.Close(&outStream)
 			break
 		case "command":
-			replyMsg, replyMarkup, err = tg.commandHandle.Handle(incomeStream.Message.Command(), incomeStream.Message.CommandArguments())
-			if err != nil {
-				config.Log.Errorf("Error: %v", err)
+			handleRs = tg.commandHandle.Handle(incomeStream.Message.Command(), incomeStream.Message.CommandArguments())
+			if handleRs.Error != nil {
+				config.Log.Errorf("Error: %v", handleRs.Error)
 				continue
 			}
 			break
 		case "new_message":
-			// Message handler
-			replyMsg, err = tg.messageHandle.Handle(&incomeStream)
-			if err != nil {
-				config.Log.Errorf("Error: %v", err)
-				// return err to user
+			handleRs = tg.messageHandle.Handle(&incomeStream)
+			if handleRs.Error != nil {
+				config.Log.Errorf("Error: %v", handleRs.Error)
 			}
 			break
 		}
 
-		if err != nil {
-			replyMsg = err.Error()
-			config.Log.Errorf("Error: %v", err)
+		if handleRs.Error != nil {
+			handleRs.ReplyMsg = handleRs.Error.Error()
+			config.Log.Errorf("Error: %v", handleRs.Error.Error())
 		}
 
-		reloadKeyboard(tg.keyboardHandle, &outStream, replyMsg, replyMarkup)
+		reloadKeyboard(tg.keyboardHandle, &outStream, handleRs.ReplyMsg, handleRs.ReplyMarkup)
 		sendToTelegram(tg.bot, outStream)
 	}
 }
