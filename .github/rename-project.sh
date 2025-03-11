@@ -36,7 +36,5 @@ do
     echo "Renamed $filename"
 done
 
-mv configs/.env-example configs/.env
-
 # This command runs only once on GHA!
 rm -rf .github/template.yml
