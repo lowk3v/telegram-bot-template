@@ -16,8 +16,7 @@ echo "Renaming project..."
 
 name_upper="$(echo $name|tr 'a-z' 'A-Z')"
 
-# for filename in $(find . -name "*.*")
-for filename in $(git ls-files)
+for filename in $(grep -liroE '(author_name|project_description|project_name)' .)
 do
     if [[ $filename == *".github"* ]]; then
         continue
