@@ -22,15 +22,15 @@ do
         continue
     fi
     if [[ $(uname) == "Darwin" ]]; then
-      sed -i '' -e "s/author_name/$author/g" $filename
-      sed -i '' -e "s/project_description/$description/g" $filename
-      sed -i '' -e "s/PROJECT_NAME/$name_upper/g" $filename
-      sed -i '' -e "s/project_name/$name/g" $filename
+      sed -i '' -ne "s/author_name/$author/g" $filename
+      sed -i '' -ne "s/project_description/$description/g" $filename
+      sed -i '' -ne "s/PROJECT_NAME/$name_upper/g" $filename
+      sed -i '' -ne "s/project_name/$name/g" $filename
     else
-      sed -e "s/author_name/$author/g" $filename
-      sed -e "s/project_description/$description/g" $filename
-      sed -e "s/PROJECT_NAME/$name_upper/g" $filename
-      sed -e "s/project_name/$name/g" $filename
+      sed -ne "s/author_name/$author/g" $filename
+      sed -ne "s/project_description/$description/g" $filename
+      sed -ne "s/PROJECT_NAME/$name_upper/g" $filename
+      sed -ne "s/project_name/$name/g" $filename
     fi
     echo "Renamed $filename"
 done
